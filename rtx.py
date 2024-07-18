@@ -17,7 +17,7 @@ bot = AsyncTeleBot(TOKEN)
 @bot.message_handler(commands=['help', 'start'])
 async def send_welcome(message):
     await bot.reply_to(message, """\
-Приветствую, Я чатбот на осyнове ChatRtx.
+Приветствую, Я чатбот на основе ChatRtx.
 Сейчас я работаю на чистом энтузиазме и жгу электроэнергию в квартире. Для получения этого сообщения выполни команду /help.\
 """)
 

@@ -2,7 +2,7 @@ import os
 import asyncio
 import rtx_api_3_5 as rtx_api
 from telebot.async_telebot import AsyncTeleBot
-from telegram import ParseMode
+from telebot.types import ParseMode
 from dotenv import load_dotenv
 import random
 
@@ -28,7 +28,7 @@ async def handle_message(message):
     await bot.reply_to(message, selected_option)
     res = rtx_api.send_message(message.text)
     # print(response)
-    await bot.reply_to(message, res, parse_mode=ParseMode.MARKDOWN)
+    await bot.reply_to(message, res, parse_mode=telegram.ParseMode.MARKDOWN_V2)
 
 # Запускаем бота
 asyncio.run(bot.polling())

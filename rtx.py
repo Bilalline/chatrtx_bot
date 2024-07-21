@@ -2,7 +2,7 @@ import os
 import asyncio
 import rtx_api_3_5 as rtx_api
 from telebot.async_telebot import AsyncTeleBot
-from telebot.types import ParseMode
+from telegram import ParseMode
 from dotenv import load_dotenv
 import random
 

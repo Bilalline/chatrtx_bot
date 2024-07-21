@@ -28,7 +28,7 @@ async def handle_message(message):
     await bot.reply_to(message, selected_option)
     res = rtx_api.send_message(message.text)
     # print(response)
-    await bot.reply_to(message, res, parse_mode=MARKDOWN_V2)
+    await bot.reply_to(message, res, parse_mode='MARKDOWN_V2')
 
 # Запускаем бота
 asyncio.run(bot.polling())

@@ -3,10 +3,7 @@ import string
 import json
 import requests
 
-port = 22775
-
-
-def join_queue(session_hash, fn_index, port, chatdata):
+def join_queue(session_hash, fn_index, ip,  port, chatdata):
     python_object = {
         "data": chatdata,
         "event_data": None,
@@ -15,11 +12,11 @@ def join_queue(session_hash, fn_index, port, chatdata):
     }
     json_string = json.dumps(python_object)
 
-    url = f"http://192.168.1.57:{port}/queue/join"
+    url = f"http://{ip}:{port}/queue/join"
     response = requests.post(url, data=json_string)
 
-def listen_for_updates(session_hash, port):
-    url = f"http://192.168.1.57:{port}/queue/data?session_hash={session_hash}"
+def listen_for_updates(session_hash, ip, port):
+    url = f"http://{ip}:{port}/queue/data?session_hash={session_hash}"
 
     response = requests.get(url, stream=True)
     for line in response.iter_lines():
@@ -32,7 +29,7 @@ def listen_for_updates(session_hash, port):
                 pass
     return ""
 
-def send_message(message):
+def send_message(message, ip, port):
     if not port:
         find_chat_with_rtx_port()
     if not port:
@@ -42,5 +39,5 @@ def send_message(message):
 
     #add chat history here -v
     chatdata = [[[message, None]], None]
-    join_queue(session_hash, 34, port, chatdata)
-    return listen_for_updates(session_hash, port)
+    join_queue(session_hash, 34, ip, port, chatdata)
+    return listen_for_updates(session_hash, ip, port)

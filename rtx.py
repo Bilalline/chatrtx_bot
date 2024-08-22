@@ -1,6 +1,6 @@
 import os
 import asyncio
-import rtx_api_3_5 as rtx_api
+import rtx_api_july_2024 as rtx_api
 from telebot.async_telebot import AsyncTeleBot
 from telebot import TeleBot
 from dotenv import load_dotenv
@@ -48,7 +48,7 @@ async def handle_message(message):
     await bot.reply_to(message, selected_option)
 
     try:
-        res = await asyncio.to_thread(rtx_api.send_message, message.text, IP, PORT)
+        res = await asyncio.to_thread(rtx_api.send_message, message.text)
         markdown_message = await convert_to_markdown(res)
 
         if len(markdown_message) > 2500:

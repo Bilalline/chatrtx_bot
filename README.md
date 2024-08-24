@@ -12,7 +12,8 @@ echo "TOKEN=AAA:BBBB" > .env
 python3 rtx.py
 
 
-docker build -t bot:1 .\
+docker build -t bilalline/chatrtx_bot:3 .
+docker push bilalline/chatrtx_bot:3
 
 
 docker run -e TOKEN= \

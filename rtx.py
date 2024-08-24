@@ -4,11 +4,10 @@ import rtx_api_july_2024 as rtx_api
 from telebot.async_telebot import AsyncTeleBot
 from telebot import TeleBot
 from dotenv import load_dotenv
+import pprint
 import random
 import re
-
-
-options = ["Работаю", "Выполняю", "Обождите", "Занимаюсь", "В работе", "Делаю чудо", "Бип буп бип буп"]
+from my_functions import options
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -43,24 +42,51 @@ async def like(message):
 
 @bot.message_handler(content_types=['text'])
 async def handle_message(message):
-    question = await bot.send_message(GROUP_CHAT_LOG, f'Q by User: {message.text}', parse_mode='Markdown')
-    selected_option = random.choice(options)
-    await bot.reply_to(message, selected_option)
+    if message.chat.type == "supergroup":
+        if "@chatrtxbill_bot" in message.text:
+            user_id = message.from_user.id
+            group_id = message.chat.id
+            username = message.from_user.username if message.from_user.username else f'User {user_id}'  # Проверка наличия ника
+            question = await bot.send_message(GROUP_CHAT_LOG, f'Q by t.me/{username} ({user_id}): {message.text[15:]}, from group {group_id}', parse_mode='Markdown')
+            selected_option = random.choice(options)
+            await bot.reply_to(message, selected_option)
 
-    try:
-        res = await asyncio.to_thread(rtx_api.send_message, message.text)
-        markdown_message = await convert_to_markdown(res)
+            try:
+                res = await asyncio.to_thread(rtx_api.send_message, message.text[15:])
+                markdown_message = await convert_to_markdown(res)
 
-        if len(markdown_message) > 2500:
-            msgs = [markdown_message[i:i + 2500] for i in range(0, len(markdown_message), 2500)]
-            for text in msgs:
-                await bot.reply_to(message, text, parse_mode='markdown')
-                await bot.reply_to(question, f'A: {text}', parse_mode='markdown')
-        else:
-            await bot.reply_to(message, markdown_message, parse_mode='markdown')
-            await bot.reply_to(question, f'A: {markdown_message}', parse_mode='markdown')
-    except Exception as e:
-        await bot.reply_to(question, f'Error RTX: {e}')
+                if len(markdown_message) > 2500:
+                    msgs = [markdown_message[i:i + 2500] for i in range(0, len(markdown_message), 2500)]
+                    for text in msgs:
+                        await bot.reply_to(message, text, parse_mode='markdown')
+                        await bot.reply_to(question, f'A: {text}', parse_mode='markdown')
+                else:
+                    await bot.reply_to(message, markdown_message, parse_mode='markdown')
+                    await bot.reply_to(question, f'A: {markdown_message}', parse_mode='markdown')
+            except Exception as e:
+                await bot.reply_to(question, f'Error RTX: {e}')
+        else: print('in group but not @')
+    elif message.chat.type == "private":
+        user_id = message.from_user.id
+        username = message.from_user.username if message.from_user.username else f'User {user_id}'  # Проверка наличия ника
+        question = await bot.send_message(GROUP_CHAT_LOG, f'Q by t.me/{username} ({user_id}): {message.text}', parse_mode='Markdown')
+        selected_option = random.choice(options)
+        await bot.reply_to(message, selected_option)
+
+        try:
+            res = await asyncio.to_thread(rtx_api.send_message, message.text)
+            markdown_message = await convert_to_markdown(res)
+
+            if len(markdown_message) > 2500:
+                msgs = [markdown_message[i:i + 2500] for i in range(0, len(markdown_message), 2500)]
+                for text in msgs:
+                    await bot.reply_to(message, text, parse_mode='markdown')
+                    await bot.reply_to(question, f'A: {text}', parse_mode='markdown')
+            else:
+                await bot.reply_to(message, markdown_message, parse_mode='markdown')
+                await bot.reply_to(question, f'A: {markdown_message}', parse_mode='markdown')
+        except Exception as e:
+            await bot.reply_to(question, f'Error RTX: {e}')
 
 # Запускаем бота
 try:
